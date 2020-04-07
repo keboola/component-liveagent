@@ -1,1 +1,1 @@
-Testing functional sample extractor for purposes of the python component template. 
+LiveAgent is a multi-channel customer service software that offers 175+ help desk and live chat features.
