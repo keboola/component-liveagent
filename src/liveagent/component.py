@@ -103,6 +103,8 @@ class Component(KBCEnvHandler):
 
         if 'tickets' in _objects or 'tickets_messages' in _objects:
 
+            logging.info("Download data about tickets.")
+
             _writer_tickets = LiveAgentWriter(self.tables_out_path, 'tickets', _incremental)
             _api_results = self.client.getTickets()
             _writer_tickets.writerows(_api_results)
