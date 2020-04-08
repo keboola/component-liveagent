@@ -12,9 +12,9 @@ LADESK_URL = 'https://{}.ladesk.com/api/v3/'
 PAGE_LIMIT = 500
 DATE_FILTER_FIELD_CALLS = 'dateCreated'
 DATE_FILTER_FIELD_CHATS = 'date_created'
-DATE_FILTER_FIELD_COMPS = 'date_changed'
-DATE_FILTER_FIELD_CONTS = 'date_changed'
-DATE_FILTER_FIELD_TCKTS = 'last_activity'
+DATE_FILTER_FIELD_COMPS = 'datechanged'
+DATE_FILTER_FIELD_CONTS = 'datechanged'
+DATE_FILTER_FIELD_TCKTS = 'date_changed'
 DATE_FILTER_FIELD_MESGS = 'datecreated'
 
 

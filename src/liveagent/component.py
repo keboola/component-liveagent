@@ -19,7 +19,7 @@ MANDATORY_PARS = [KEY_API_TOKEN, KEY_ORGANIZATION, KEY_OBJECTS]
 MANDATORY_IMAGE_PARS = []
 
 APP_VERSION = '0.0.1'
-SUPPORTED_ENDPOINTS = ["agents", "calls", "departments", "tags", "tickets"]
+SUPPORTED_ENDPOINTS = ["agents", "calls", "companies", "contacts", "departments", "tags", "tickets"]
 
 
 class Component(KBCEnvHandler):

@@ -1,7 +1,13 @@
 {
   "type": "object",
   "title": "Parameters",
-  "required": [],
+  "required": [
+    "#token",
+    "organization",
+    "objects",
+    "date",
+    "incremental_load"
+  ],
   "properties": {
     "#token": {
       "type": "string",
@@ -26,6 +32,8 @@
         "enum": [
           "agents",
           "calls",
+          "companies",
+          "contacts",
           "departments",
           "tags",
           "tickets"
@@ -35,6 +43,7 @@
       "default": [
         "agents",
         "calls",
+        "contacts",
         "tickets"
       ],
       "propertyOrder": 300
@@ -68,10 +77,12 @@
     },
     "incremental_load": {
       "type": "number",
+      "format": "text",
       "enum": [
         1,
         0
       ],
+      "uniqueItems": true,
       "title": "Load Type",
       "default": 1,
       "options": {
@@ -79,7 +90,8 @@
           "Incremental Load",
           "Full Load"
         ]
-      }
+      },
+      "propertyOrder": 500
     }
   }
 }
