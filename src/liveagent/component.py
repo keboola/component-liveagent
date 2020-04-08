@@ -18,7 +18,7 @@ KEY_INCREMENTAL = 'incremental_load'
 MANDATORY_PARS = [KEY_API_TOKEN, KEY_ORGANIZATION, KEY_OBJECTS]
 MANDATORY_IMAGE_PARS = []
 
-APP_VERSION = '0.0.1'
+APP_VERSION = '0.0.2'
 SUPPORTED_ENDPOINTS = ["agents", "calls", "companies", "contacts", "departments", "tags", "tickets"]
 
 
