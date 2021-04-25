@@ -74,6 +74,37 @@ FIELDS_R_TICKETS_MESSAGES_CONTENT = ['id', 'message_id', 'user_id', 'type', 'dat
 PK_TICKETS_MESSAGES_CONTENT = ['id', 'message_id']
 JSON_TICKETS_MESSAGES_CONTENT = []
 
+FIELDS_AGENT_AVAILABILITY = ['id', 'userid', 'from_date', 'to_date', 'firstname', 'lastname',
+                             'contactid', 'departmentid', 'department_name', 'hours_online']
+FIELDS_R_AGENT_AVAILABILITY = ['id', 'agent_id', 'date_from', 'date_to', 'first_name', 'last_name',
+                               'contact_id', 'department_id', 'department_name', 'hours_online']
+PK_AGENT_AVAILABILITY = ['id', 'agent_id']
+JSON_AGENT_AVAILABILITY = []
+
+FIELDS_AGENT_REPORT = ['id', 'date', 'contactid', 'firstname', 'lastname', 'worktime', 'answers', 'answers_ph',
+                       'newAnswerAvgTime', 'newAnswerAvgTimeSla', 'nextAnswerAvgTime', 'nextAnswerAvgTimeSla',
+                       'calls', 'calls_ph', 'missed_calls', 'missed_calls_ph', 'call_seconds', 'call_seconds_ph',
+                       'chats', 'chats_ph', 'chat_answers', 'chat_answers_ph', 'missed_chats', 'missed_chats_ph',
+                       'chat_pickup', 'chatPickupAvgTime', 'chatAvgTime', 'not_ranked', 'not_ranked_p',
+                       'not_ranked_ph', 'rewards', 'rewards_p', 'rewards_ph', 'punishments', 'punishments_p',
+                       'punishments_ph', 'created_tickets', 'resolved_tickets', 'u_chats', 'u_calls', 'notes',
+                       'firstAssignAvgTime', 'firstAssignAvgTimeSla', 'firstResolveAvgTime', 'firstResolveAvgTimeSla',
+                       'calls_outgoing', 'call_outgoing_seconds', 'call_outgoing_avg_time', 'call_pickup_avg_time',
+                       'call_avg_time', 'calls_internal', 'call_internal_avg_time', 'call_internal_seconds', 'o_calls']
+FIELDS_R_AGENT_REPORT = ['agent_id', 'date', 'contact_id', 'first_name', 'last_name', 'work_time', 'answers',
+                         'answers_ph', 'new_answer_avg_time', 'new_answer_avg_time_sla', 'next_answer_avg_time',
+                         'next_answer_avg_time_sla', 'calls', 'calls_ph', 'missed_calls', 'missed_calls_ph',
+                         'call_seconds', 'call_seconds_ph', 'chats', 'chats_ph', 'chat_answers', 'chat_answers_ph',
+                         'missed_chats', 'missed_chats_ph', 'chat_pickup', 'chat_pickup_avg_time', 'chat_avg_time',
+                         'not_ranked', 'not_ranked_p', 'not_ranked_ph', 'rewards', 'rewards_p', 'rewards_ph',
+                         'punishments', 'punishments_p', 'punishments_ph', 'created_tickets', 'resolved_tickets',
+                         'u_chats', 'u_calls', 'notes', 'first_assign_avg_time', 'first_assign_avg_time_sla',
+                         'first_resolve_avg_time', 'first_resolve_avg_time_sla', 'calls_outgoing',
+                         'call_outgoing_seconds', 'call_outgoing_avg_time', 'call_pickup_avg_time', 'call_avg_time',
+                         'calls_internal', 'call_internal_avg_time', 'call_internal_seconds', 'o_calls']
+PK_AGENT_REPORT = ['agent_id', 'date']
+JSON_AGENT_REPORT = []
+
 
 class LiveAgentWriter:
 

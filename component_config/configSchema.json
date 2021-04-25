@@ -3,6 +3,7 @@
   "title": "Parameters",
   "required": [
     "#token",
+    "#token_v1",
     "organization",
     "objects",
     "date",
@@ -12,9 +13,16 @@
     "#token": {
       "type": "string",
       "format": "password",
-      "title": "API Token",
+      "title": "API Token (for API v3)",
       "propertyOrder": 100,
-      "description": "An API token which will be used in authentication. You can generate an API key by navigating to Configuration > System > API."
+      "description": "An API token which will be used in authentication for API v3. You can generate an API key by navigating to Configuration > System > API."
+    },
+    "#token_v1": {
+      "type": "string",
+      "format": "password",
+      "title": "API Token (for API v1)",
+      "propertyOrder": 150,
+      "description": "An API token which will be used in authentication for API v1. You can obtain an API key by navigating to Configuration > System > API."
     },
     "organization": {
       "type": "string",
@@ -36,9 +44,24 @@
           "contacts",
           "departments",
           "tags",
-          "tickets"
+          "tickets",
+          "agent_report",
+          "agent_availability"
         ],
-        "type": "string"
+        "type": "string",
+        "options": {
+          "enum_titles": [
+            "Agents (v3)",
+            "Calls (v3)",
+            "Companies (v3)",
+            "Contacts (v3)",
+            "Departments (v3)",
+            "Tags (v3)",
+            "Tickets (v3)",
+            "Agent Report (v1)",
+            "Agent Availability (v1)"
+          ]
+        }
       },
       "default": [
         "agents",
