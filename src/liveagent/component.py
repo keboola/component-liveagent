@@ -20,9 +20,9 @@ KEY_DEBUG = 'debug'
 MANDATORY_PARS = [KEY_API_TOKEN, KEY_ORGANIZATION, KEY_OBJECTS]
 MANDATORY_IMAGE_PARS = []
 
-APP_VERSION = '0.1.0'
+APP_VERSION = '0.1.1'
 SUPPORTED_ENDPOINTS = ["agents", "calls", "companies", "contacts", "departments", "tags", "tickets"]
-SUPPORTED_ENDPOINTS_V1 = ["agent_report", "agent_availability"]
+SUPPORTED_ENDPOINTS_V1 = ["agent_report", "agent_availability", "conversations"]
 
 
 class Component(KBCEnvHandler):
@@ -127,6 +127,11 @@ class Component(KBCEnvHandler):
                 _api_results = self.client.get_agent_availability(self.parameters.date_from, self.parameters.date_until)
                 _writer.writerows(_api_results)
 
+            elif obj == 'conversations':
+
+                _api_results = self.client.get_conversations(self.parameters.date_from, self.parameters.date_until)
+                _writer.writerows(_api_results)
+
             elif obj == 'agent_report':
 
                 for dt in self.parameters.date_chunks:
@@ -135,6 +140,10 @@ class Component(KBCEnvHandler):
                     end = date + ' 23:59:59'
                     _api_results = self.client.get_agent_report(date_from=start, date_to=end)
                     _writer.writerows(_api_results, parentDict={'date': date})
+
+            else:
+                logging.error(f"Unknown object {obj}.")
+                sys.exit(1)
 
         if 'tickets' in _objects or 'tickets_messages' in _objects:
 

@@ -46,7 +46,8 @@
           "tags",
           "tickets",
           "agent_report",
-          "agent_availability"
+          "agent_availability",
+          "conversations"
         ],
         "type": "string",
         "options": {
@@ -59,7 +60,8 @@
             "Tags (v3)",
             "Tickets (v3)",
             "Agent Report (v1)",
-            "Agent Availability (v1)"
+            "Agent Availability (v1)",
+            "Conversations (v1)"
           ]
         }
       },

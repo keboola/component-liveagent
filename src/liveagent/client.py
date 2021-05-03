@@ -145,6 +145,17 @@ class LiveAgentClient(HttpClientBase):
         return self._get_paged_request('reports/tickets/agentsavailability', result_key='agentsavailability',
                                        parameters=par_agent_availability, method='limit')
 
+    def get_conversations(self, date_from: str, date_to: str) -> List:
+
+        par_conversations = {
+            'datefrom': date_from,
+            'dateto': date_to,
+            'apikey': self.parameters.token_v1
+        }
+
+        return self._get_paged_request('conversations', result_key='conversations',
+                                       parameters=par_conversations, method='limit')
+
     def _create_filter_expresssion(self, filter_field):
 
         _expr = f"[[\"{filter_field}\",\">=\",\"{self.parameters.date_from}\"]," + \

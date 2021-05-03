@@ -105,6 +105,15 @@ FIELDS_R_AGENT_REPORT = ['agent_id', 'date', 'contact_id', 'first_name', 'last_n
 PK_AGENT_REPORT = ['agent_id', 'date']
 JSON_AGENT_REPORT = []
 
+FIELDS_CONVERSATIONS = ['conversationid', 'code', 'datecreated', 'datechanged', 'datedue', 'departmentid',
+                        'departmentname', 'status', 'ownername', 'owneremail', 'subject', 'preview', 'publicurlcode',
+                        'tags', 'channel_type', 'messagegroupsin', 'messagegroupsout']
+FIELDS_R_CONVERSATIONS = ['id', 'code', 'date_created', 'date_changed', 'date_due', 'department_id',
+                          'department_name', 'status', 'owner_name', 'owner_email', 'subject', 'preview',
+                          'public_url_code', 'tags', 'channel_type', 'message_groups_in', 'message_groups_out']
+PK_CONVERSATIONS = ['id']
+JSON_CONVERSATIONS = []
+
 
 class LiveAgentWriter:
 
