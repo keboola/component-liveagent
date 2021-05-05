@@ -150,11 +150,13 @@ class LiveAgentClient(HttpClientBase):
         par_conversations = {
             'datefrom': date_from,
             'dateto': date_to,
-            'apikey': self.parameters.token_v1
+            'apikey': self.parameters.token_v1,
+            'channel_type': 'E,B,M,I,C,W,F,A,T,Q,S'
         }
 
         return self._get_paged_request('conversations', result_key='conversations',
-                                       parameters=par_conversations, method='limit')
+                                       parameters=par_conversations, method='limit',
+                                       limit_param='limit', offset_param='offset')
 
     def _create_filter_expresssion(self, filter_field):
 
@@ -166,7 +168,8 @@ class LiveAgentClient(HttpClientBase):
         return _expr
 
     def _get_paged_request(self, endpoint: str, parameters: Dict = None,
-                           result_key: str = None, method: str = 'page', limit_size: int = 1000) -> List:
+                           result_key: str = None, method: str = 'page', limit_size: int = 1000,
+                           limit_param: str = 'limitcount', offset_param: str = 'limitfrom') -> List:
 
         url_endpoint = urljoin(self.base_url, endpoint)
 
@@ -260,7 +263,7 @@ class LiveAgentClient(HttpClientBase):
             while results_complete is False:
                 pass
 
-                par_page = {**parameters, **{'limitcount': limit, 'limitfrom': offset}}
+                par_page = {**parameters, **{limit_param: limit, offset_param: offset}}
                 rsp_page = self.get_raw(url=url_endpoint, params=par_page)
 
                 if rsp_page.status_code == 200:
