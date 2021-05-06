@@ -20,7 +20,7 @@ KEY_DEBUG = 'debug'
 MANDATORY_PARS = [KEY_API_TOKEN, KEY_ORGANIZATION, KEY_OBJECTS]
 MANDATORY_IMAGE_PARS = []
 
-APP_VERSION = '0.1.3'
+APP_VERSION = '0.1.4'
 SUPPORTED_ENDPOINTS = ["agents", "calls", "companies", "contacts", "departments", "tags", "tickets"]
 SUPPORTED_ENDPOINTS_V1 = ["agent_report", "agent_availability", "conversations"]
 
@@ -129,7 +129,7 @@ class Component(KBCEnvHandler):
 
             elif obj == 'conversations':
 
-                _api_results = self.client.get_conversations(self.parameters.date_from, self.parameters.date_until)
+                _api_results = self.client.get_conversations(self.parameters.date_from)
                 _writer.writerows(_api_results)
 
             elif obj == 'agent_report':

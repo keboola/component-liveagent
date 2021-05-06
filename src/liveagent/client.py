@@ -145,7 +145,7 @@ class LiveAgentClient(HttpClientBase):
         return self._get_paged_request('reports/tickets/agentsavailability', result_key='agentsavailability',
                                        parameters=par_agent_availability, method='limit')
 
-    def get_conversations(self, date_from: str, date_to: str) -> List:
+    def get_conversations(self, date_from: str) -> List:
 
         par_conversations = {
             'datechanged': f'gt:{date_from}',
