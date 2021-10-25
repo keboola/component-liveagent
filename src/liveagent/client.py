@@ -16,6 +16,7 @@ DATE_FILTER_FIELD_COMPS = 'datechanged'
 DATE_FILTER_FIELD_CONTS = 'datechanged'
 DATE_FILTER_FIELD_TCKTS = 'date_changed'
 DATE_FILTER_FIELD_MESGS = 'datecreated'
+DATE_FILTER_FIELD_HSTRY = 'date_from'
 
 
 class LiveAgentClient(HttpClientBase):
@@ -110,6 +111,14 @@ class LiveAgentClient(HttpClientBase):
 
         return self._get_paged_request(f'v3/tickets/{ticket_id}/messages', parameters=par_messages)
 
+    def get_tickets_history(self) -> List:
+
+        par_tickets_history = {
+            "_filters": self._create_filter_expresssion(DATE_FILTER_FIELD_HSTRY)
+        }
+
+        return self._get_paged_request('v3/tickets/history', parameters=par_tickets_history, method='cursor')
+
     def get_agent_report(self, date_from: str, date_to: str) -> List:
 
         columns = 'id,contactid,firstname,lastname,worktime,answers,answers_ph,newAnswerAvgTime,' + \
@@ -131,7 +140,7 @@ class LiveAgentClient(HttpClientBase):
         return self._get_paged_request('reports/agents', parameters=par_agent_report,
                                        method='limit', result_key='agents')
 
-    def get_agent_availability(self, date_from: str, date_to: str) -> List:
+    def get_agent_availability_tickets(self, date_from: str, date_to: str) -> List:
 
         columns = 'id,userid,firstname,lastname,contactid,departmentid,department_name,hours_online,from_date,to_date'
 
@@ -144,6 +153,31 @@ class LiveAgentClient(HttpClientBase):
 
         return self._get_paged_request('reports/tickets/agentsavailability', result_key='agentsavailability',
                                        parameters=par_agent_availability, method='limit')
+
+    def get_agent_availability_chats(self, date_from: str, date_to: str) -> List:
+
+        columns = 'id,userid,firstname,lastname,contactid,departmentid,department_name,hours_online,from_date,to_date'
+
+        par_agent_availability = {
+            'date_from': date_from,
+            'date_to': date_to,
+            'apikey': self.parameters.token_v1,
+            'columns': columns
+        }
+
+        return self._get_paged_request('reports/chats/agentsavailability', result_key='agentsavailability',
+                                       parameters=par_agent_availability, method='limit')
+
+    def get_calls_availability(self, date_from: str, date_to: str) -> List:
+
+        par_calls_availability = {
+            'date_from': date_from,
+            'date_to': date_to,
+            'apikey': self.parameters.token_v1
+        }
+
+        return self._get_paged_request('reports/calls/availability', result_key='availability',
+                                       parameters=par_calls_availability, method='limit')
 
     def get_conversations(self, date_from: str) -> List:
 

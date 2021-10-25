@@ -67,6 +67,12 @@ FIELDS_R_TICKETS_MESSAGES = ['id', 'parent_id', 'ticket_id', 'user_id', 'user_fu
 PK_TICKETS_MESSAGES = ['id', 'ticket_id']
 JSON_TICKETS_MESSAGES = []
 
+FIELDS_TICKETS_HISTORY = ['id', 'conversation_id', 'conversation_code', 'department_id', 'agent_id', 'status',
+                          'date_from', 'date_to', 'elapsed_time']
+FIELDS_R_TICKETS_HISTORY = FIELDS_TICKETS_HISTORY
+PK_TICKETS_HISTORY = ['id']
+JSON_TICKETS_HISTORY = []
+
 FIELDS_TICKETS_MESSAGES_CONTENT = ['id', 'message_id', 'userid', 'type', 'datecreated', 'format',
                                    'message', 'visibility']
 FIELDS_R_TICKETS_MESSAGES_CONTENT = ['id', 'message_id', 'user_id', 'type', 'date_created', 'format',
@@ -80,6 +86,13 @@ FIELDS_R_AGENT_AVAILABILITY = ['id', 'agent_id', 'date_from', 'date_to', 'first_
                                'contact_id', 'department_id', 'department_name', 'hours_online']
 PK_AGENT_AVAILABILITY = ['id', 'agent_id']
 JSON_AGENT_AVAILABILITY = []
+
+FIELDS_AGENT_AVAILABILITY_CHATS = ['id', 'userid', 'from_date', 'to_date', 'firstname', 'lastname',
+                                   'contactid', 'departmentid', 'department_name', 'hours_online']
+FIELDS_R_AGENT_AVAILABILITY_CHATS = ['id', 'agent_id', 'date_from', 'date_to', 'first_name', 'last_name',
+                                     'contact_id', 'department_id', 'department_name', 'hours_online']
+PK_AGENT_AVAILABILITY_CHATS = ['id', 'agent_id']
+JSON_AGENT_AVAILABILITY_CHATS = []
 
 FIELDS_AGENT_REPORT = ['id', 'date', 'contactid', 'firstname', 'lastname', 'worktime', 'answers', 'answers_ph',
                        'newAnswerAvgTime', 'newAnswerAvgTimeSla', 'nextAnswerAvgTime', 'nextAnswerAvgTimeSla',
@@ -113,6 +126,11 @@ FIELDS_R_CONVERSATIONS = ['id', 'code', 'date_created', 'date_changed', 'date_du
                           'public_url_code', 'tags', 'channel_type', 'message_groups_in', 'message_groups_out']
 PK_CONVERSATIONS = ['id']
 JSON_CONVERSATIONS = []
+
+FIELDS_CALLS_AVAILABILITY = ['date', 'mins', 'pct']
+FIELDS_R_CALLS_AVAILABILITY = ['date', 'minutes', 'percentage']
+PK_CALLS_AVAILABILITY = ['date']
+JSON_CALLS_AVAILABILITY = []
 
 
 class LiveAgentWriter:

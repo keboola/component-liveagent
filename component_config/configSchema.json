@@ -45,8 +45,12 @@
           "departments",
           "tags",
           "tickets",
+          "tickets_messages",
+          "tickets_history",
           "agent_report",
           "agent_availability",
+          "agent_availability_chats",
+          "calls_availability",
           "conversations"
         ],
         "type": "string",
@@ -59,8 +63,12 @@
             "Departments (v3)",
             "Tags (v3)",
             "Tickets (v3)",
+            "Tickets Messages (v3)",
+            "Tickets History (v3)",
             "Agent Report (v1)",
-            "Agent Availability (v1)",
+            "Agent Availability for Tickets (v1)",
+            "Agent Availability for Chats (v1)",
+            "Calls Availability (v1)",
             "Conversations (v1)"
           ]
         }

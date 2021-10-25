@@ -21,8 +21,10 @@ MANDATORY_PARS = [KEY_API_TOKEN, KEY_ORGANIZATION, KEY_OBJECTS]
 MANDATORY_IMAGE_PARS = []
 
 APP_VERSION = '0.1.4'
-SUPPORTED_ENDPOINTS = ["agents", "calls", "companies", "contacts", "departments", "tags", "tickets"]
-SUPPORTED_ENDPOINTS_V1 = ["agent_report", "agent_availability", "conversations"]
+SUPPORTED_ENDPOINTS = ["agents", "calls", "companies", "contacts", "departments", "tags", "tickets", "tickets_messages",
+                       "tickets_history"]
+SUPPORTED_ENDPOINTS_V1 = ["agent_report", "agent_availability", "conversations", "agent_availability_chats",
+                          "calls_availability"]
 
 
 class Component(KBCEnvHandler):
@@ -78,7 +80,8 @@ class Component(KBCEnvHandler):
             # self.parameters.date_from_iso = date_from_parsed.strftime('%Y-%m-%d')
             # self.parameters.date_to_iso = date_until_parsed.strftime('%Y-%m-%d')
 
-            self.parameters.date_chunks = self.split_dates_to_chunks(date_from_parsed, date_until_parsed, 0, '%Y-%m-%d')
+            self.parameters.date_chunks = self.split_dates_to_chunks(
+                date_from_parsed, date_until_parsed, 0, '%Y-%m-%d')
 
             logging.debug(f"Date from: {self.parameters.date_from}.")
             logging.debug(f"Date until: {self.parameters.date_until}.")
@@ -124,7 +127,22 @@ class Component(KBCEnvHandler):
 
             elif obj == 'agent_availability':
 
-                _api_results = self.client.get_agent_availability(self.parameters.date_from, self.parameters.date_until)
+                _api_results = self.client.get_agent_availability_tickets(self.parameters.date_from,
+                                                                          self.parameters.date_until)
+                _writer.writerows(_api_results)
+
+            elif obj == 'agent_availability_chats':
+
+                _api_results = self.client.get_agent_availability_chats(self.parameters.date_from,
+                                                                        self.parameters.date_until)
+
+                _writer.writerows(_api_results)
+
+            elif obj == 'calls_availability':
+
+                _api_results = self.client.get_calls_availability(self.parameters.date_from,
+                                                                  self.parameters.date_until)
+
                 _writer.writerows(_api_results)
 
             elif obj == 'conversations':
@@ -160,8 +178,8 @@ class Component(KBCEnvHandler):
 
                 ticket_ids = [t['id'] for t in _api_results]
 
-                _writer_messages = LiveAgentWriter(self.tables_out_path, 'tickets-messages', _incremental)
-                _writer_content = LiveAgentWriter(self.tables_out_path, 'tickets-messages-content',
+                _writer_messages = LiveAgentWriter(self.tables_out_path, 'tickets_messages', _incremental)
+                _writer_content = LiveAgentWriter(self.tables_out_path, 'tickets_messages_content',
                                                   _incremental)
 
                 _out_messages = []
@@ -174,7 +192,7 @@ class Component(KBCEnvHandler):
                         msg['ticket_id'] = tid
                         msg_id = msg['id']
 
-                        _out_messages = [msg]
+                        _out_messages += [msg]
 
                         for cont in msg['messages']:
                             cont['message_id'] = msg_id
