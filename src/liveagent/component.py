@@ -1,9 +1,8 @@
 import dateparser
 import logging
-import sys
 from kbc.env_handler import KBCEnvHandler
 from liveagent.utils import Parameters
-from liveagent.client import LiveAgentClient
+from liveagent.client import LiveAgentClient, ClientException
 from liveagent.result import LiveAgentWriter
 
 # configuration variables
@@ -20,11 +19,15 @@ KEY_DEBUG = 'debug'
 MANDATORY_PARS = [KEY_API_TOKEN, KEY_ORGANIZATION, KEY_OBJECTS]
 MANDATORY_IMAGE_PARS = []
 
-APP_VERSION = '0.1.4'
+APP_VERSION = '0.2.1'
 SUPPORTED_ENDPOINTS = ["agents", "calls", "companies", "contacts", "departments", "tags", "tickets", "tickets_messages",
                        "tickets_history"]
 SUPPORTED_ENDPOINTS_V1 = ["agent_report", "agent_availability", "conversations", "agent_availability_chats",
                           "calls_availability"]
+
+
+class UserException(Exception):
+    pass
 
 
 class Component(KBCEnvHandler):
@@ -32,20 +35,17 @@ class Component(KBCEnvHandler):
     def __init__(self):
 
         super().__init__(mandatory_params=MANDATORY_PARS, log_level='INFO')
-        sys.tracebacklimit = 0
         logging.info(f'Running version {APP_VERSION}.')
 
         if self.cfg_params.get(KEY_DEBUG) is True:
             logger = logging.getLogger()
             logger.setLevel(logging.DEBUG)
-            sys.tracebacklimit = 3
 
         try:
             self.validate_config(MANDATORY_PARS)
             self.validate_image_parameters(MANDATORY_IMAGE_PARS)
         except ValueError as e:
-            logging.exception(e)
-            exit(1)
+            raise UserException(e)
 
         self.parameters = Parameters()
         self.parameters.token = self.cfg_params[KEY_API_TOKEN]
@@ -70,8 +70,8 @@ class Component(KBCEnvHandler):
         date_until_parsed = dateparser.parse(date_until)
 
         if any([date_from_parsed is None, date_until_parsed is None]):
-            logging.error("Date values could not be parsed. Please, refer to documentation for correct specification.")
-            sys.exit(1)
+            raise UserException(
+                "Date values could not be parsed. Please, refer to documentation for correct specification.")
 
         else:
             self.parameters.date_from = date_from_parsed.strftime('%Y-%m-%d %H:%M:%S')
@@ -89,8 +89,7 @@ class Component(KBCEnvHandler):
     def check_objects(self):
 
         if self.parameters.objects == []:
-            logging.error("No objects to download were specified.")
-            sys.exit(1)
+            raise UserException("No objects to download were specified.")
 
         _unsupported = []
         for obj in self.parameters.objects:
@@ -100,12 +99,11 @@ class Component(KBCEnvHandler):
 
             if obj in SUPPORTED_ENDPOINTS_V1:
                 if self.parameters.token_v1 is None or self.parameters.token_v1 == '':
-                    logging.error(f"Missing API V1 token for API V1 endpoint {obj}.")
-                    sys.exit(1)
+                    raise UserException(f"Missing API V1 token for API V1 endpoint {obj}.")
 
         if len(_unsupported) > 0:
-            logging.error(f"Unsupported endpoints specified: {_unsupported}. Must be one of {SUPPORTED_ENDPOINTS}.")
-            sys.exit(1)
+            raise UserException(
+                f"Unsupported endpoints specified: {_unsupported}. Must be one of {SUPPORTED_ENDPOINTS}.")
 
     def run(self):
 
@@ -122,56 +120,76 @@ class Component(KBCEnvHandler):
 
             if obj not in ['tickets_messages', 'tickets', *SUPPORTED_ENDPOINTS_V1]:
 
-                _api_results = eval(f'self.client.get_{obj}()')
+                try:
+                    _api_results = eval(f'self.client.get_{obj}()')
+                except ClientException as c_ex:
+                    raise UserException(c_ex) from c_ex
                 _writer.writerows(_api_results)
 
             elif obj == 'agent_availability':
 
-                _api_results = self.client.get_agent_availability_tickets(self.parameters.date_from,
-                                                                          self.parameters.date_until)
+                try:
+                    _api_results = self.client.get_agent_availability_tickets(self.parameters.date_from,
+                                                                              self.parameters.date_until)
+                except ClientException as c_ex:
+                    raise UserException(c_ex) from c_ex
+
                 _writer.writerows(_api_results)
 
             elif obj == 'agent_availability_chats':
 
-                _api_results = self.client.get_agent_availability_chats(self.parameters.date_from,
-                                                                        self.parameters.date_until)
+                try:
+                    _api_results = self.client.get_agent_availability_chats(self.parameters.date_from,
+                                                                            self.parameters.date_until)
+                except ClientException as c_ex:
+                    raise UserException(c_ex) from c_ex
 
                 _writer.writerows(_api_results)
 
             elif obj == 'calls_availability':
 
-                _api_results = self.client.get_calls_availability(self.parameters.date_from,
-                                                                  self.parameters.date_until)
+                try:
+                    _api_results = self.client.get_calls_availability(self.parameters.date_from,
+                                                                      self.parameters.date_until)
+                except ClientException as c_ex:
+                    raise UserException(c_ex) from c_ex
 
                 _writer.writerows(_api_results)
 
             elif obj == 'conversations':
 
-                _api_results = self.client.get_conversations(self.parameters.date_from)
+                try:
+                    _api_results = self.client.get_conversations(self.parameters.date_from)
+                except ClientException as c_ex:
+                    raise UserException(c_ex) from c_ex
                 _writer.writerows(_api_results)
 
             elif obj == 'agent_report':
-
                 for dt in self.parameters.date_chunks:
                     date = dt['start_date']
                     start = date + ' 00:00:00'
                     end = date + ' 23:59:59'
-                    _api_results = self.client.get_agent_report(date_from=start, date_to=end)
+                    try:
+                        _api_results = self.client.get_agent_report(date_from=start, date_to=end)
+                    except ClientException as c_ex:
+                        raise UserException(c_ex) from c_ex
                     _writer.writerows(_api_results, parentDict={'date': date})
 
             elif obj in ['tickets_messages', 'tickets']:
                 pass
 
             else:
-                logging.error(f"Unknown object {obj}.")
-                sys.exit(1)
+                raise UserException(f"Unknown object {obj}.")
 
         if 'tickets' in _objects or 'tickets_messages' in _objects:
 
             logging.info("Download data about tickets.")
 
             _writer_tickets = LiveAgentWriter(self.tables_out_path, 'tickets', _incremental)
-            _api_results = self.client.get_tickets()
+            try:
+                _api_results = self.client.get_tickets()
+            except ClientException as c_ex:
+                raise UserException(c_ex) from c_ex
             _writer_tickets.writerows(_api_results)
 
             if 'tickets_messages' in _objects:
@@ -186,7 +204,10 @@ class Component(KBCEnvHandler):
                 _out_contents = []
 
                 for tid in ticket_ids:
-                    _messages = self.client.get_ticket_messages(tid)
+                    try:
+                        _messages = self.client.get_ticket_messages(tid)
+                    except ClientException as c_ex:
+                        raise UserException(c_ex) from c_ex
 
                     for msg in _messages:
                         msg['ticket_id'] = tid

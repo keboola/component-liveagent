@@ -7,6 +7,8 @@ __pycache__/
 
 # kbc datafolder
 data/
+venv/
+/venv/
 
 # VS Code
 .vscode/
