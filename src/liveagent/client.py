@@ -146,6 +146,21 @@ class LiveAgentClient(HttpClient):
         return self._get_paged_request('reports/agents', parameters=par_agent_report,
                                        method='limit', result_key='agents')
 
+    def get_ranking_agents_report(self, date_from: str, date_to: str) -> List:
+
+        columns = 'id,rankingType,datecreated,conversationid,agentcontactid,agentEmail,agent,contactid,' + \
+                  'requesterEmail,requester,comment'
+
+        par_ranking_agents_report = {
+            'date_from': date_from,
+            'date_to': date_to,
+            'apikey': self.parameters.token_v1,
+            'columns': columns
+        }
+
+        return self._get_paged_request('reports/ranking', parameters=par_ranking_agents_report,
+                                       method='limit', result_key='ranks')
+
     def get_agent_availability_tickets(self, date_from: str, date_to: str) -> List:
 
         columns = 'id,userid,firstname,lastname,contactid,departmentid,department_name,hours_online,from_date,to_date'

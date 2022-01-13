@@ -23,7 +23,7 @@ APP_VERSION = '0.2.1'
 SUPPORTED_ENDPOINTS = ["agents", "calls", "companies", "contacts", "departments", "tags", "tickets", "tickets_messages",
                        "tickets_history"]
 SUPPORTED_ENDPOINTS_V1 = ["agent_report", "agent_availability", "conversations", "agent_availability_chats",
-                          "calls_availability"]
+                          "calls_availability", "ranking_agents_report"]
 
 
 class UserException(Exception):
@@ -171,6 +171,17 @@ class Component(KBCEnvHandler):
                     end = date + ' 23:59:59'
                     try:
                         _api_results = self.client.get_agent_report(date_from=start, date_to=end)
+                    except ClientException as c_ex:
+                        raise UserException(c_ex) from c_ex
+                    _writer.writerows(_api_results, parentDict={'date': date})
+
+            elif obj == 'ranking_agents_report':
+                for dt in self.parameters.date_chunks:
+                    date = dt['start_date']
+                    start = date + ' 00:00:00'
+                    end = date + ' 23:59:59'
+                    try:
+                        _api_results = self.client.get_ranking_agents_report(date_from=start, date_to=end)
                     except ClientException as c_ex:
                         raise UserException(c_ex) from c_ex
                     _writer.writerows(_api_results, parentDict={'date': date})

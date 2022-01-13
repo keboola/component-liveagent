@@ -118,6 +118,13 @@ FIELDS_R_AGENT_REPORT = ['agent_id', 'date', 'contact_id', 'first_name', 'last_n
 PK_AGENT_REPORT = ['agent_id', 'date']
 JSON_AGENT_REPORT = []
 
+FIELDS_RANKING_AGENTS_REPORT = ['id', "rankingType", "datecreated", 'conversationid', 'agentcontactid', 'agentEmail',
+                                'agent', 'contactid', 'requesterEmail', 'requester', 'comment']
+JSON_RANKING_AGENTS_REPORT = []
+PK_RANKING_AGENTS_REPORT = ["id"]
+FIELDS_R_RANKING_AGENTS_REPORT = ['id', "ranking_type", "date_created", 'conversation_id', 'agent_contact_id',
+                                  'agent_email', 'agent', 'contact_id', 'requester_email', 'requester', 'comment']
+
 FIELDS_CONVERSATIONS = ['conversationid', 'code', 'datecreated', 'datechanged', 'datedue', 'departmentid',
                         'departmentname', 'status', 'ownername', 'owneremail', 'subject', 'preview', 'publicurlcode',
                         'tags', 'channel_type', 'messagegroupsin', 'messagegroupsout']
@@ -161,7 +168,6 @@ class LiveAgentWriter:
         path = self.paramTablePath + '.manifest'
 
         with open(path, 'w') as manifest:
-
             json.dump(template, manifest)
 
     def createWriter(self):
