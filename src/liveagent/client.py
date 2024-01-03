@@ -223,8 +223,8 @@ class LiveAgentClient(HttpClient):
 
     def _create_filter_expression_tickets_v3(self, filter_field):
 
-        _expr = f"[[\"{filter_field}\",\">=\",\"{self.parameters.date_from}\"]," + \
-                f"[\"{filter_field}\",\"<=\",\"{self.parameters.date_until}\"]]"
+        _expr = f"[[\"{filter_field}\",\"D>=\",\"{self.parameters.date_from}\"]," + \
+                f"[\"{filter_field}\",\"D<=\",\"{self.parameters.date_until}\"]]"
 
         logging.debug(f"Expression: {_expr}.")
 
