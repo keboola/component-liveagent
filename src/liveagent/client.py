@@ -208,6 +208,8 @@ class LiveAgentClient(HttpClient):
             'channel_type': 'E,B,M,I,C,W,F,A,T,Q,S'
         }
 
+        logging.debug(f"Conversations parameters: {par_conversations}")
+
         return self._get_paged_request('conversations', result_key='conversations',
                                        parameters=par_conversations, method='limit',
                                        limit_param='limit', offset_param='offset')
