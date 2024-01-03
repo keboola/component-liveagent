@@ -101,7 +101,7 @@ class LiveAgentClient(HttpClient):
     def get_tickets(self) -> List:
 
         par_tickets = {
-            '_filters': self._create_filter_expresssion(DATE_FILTER_FIELD_TCKTS)
+            '_filters': self._create_filter_expression_tickets_v3(DATE_FILTER_FIELD_TCKTS)
         }
 
         return self._get_paged_request('v3/tickets', parameters=par_tickets)
@@ -218,6 +218,15 @@ class LiveAgentClient(HttpClient):
                 f"[\"{filter_field}\",\"<=\",\"{self.parameters.date_until}\"]]"
 
         # logging.debug(f"Expression: {_expr}.")
+
+        return _expr
+
+    def _create_filter_expression_tickets_v3(self, filter_field):
+
+        _expr = f"[[\"{filter_field}\",\">=\",\"{self.parameters.date_from}\"]," + \
+                f"[\"{filter_field}\",\"<=\",\"{self.parameters.date_until}\"]]"
+
+        logging.debug(f"Expression: {_expr}.")
 
         return _expr
 
