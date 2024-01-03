@@ -203,7 +203,7 @@ class LiveAgentClient(HttpClient):
     def get_conversations(self, date_from: str) -> List:
 
         par_conversations = {
-            'datechanged': f'D>={date_from}',
+            'datechanged': f'gt:{date_from}',
             'apikey': self.parameters.token_v1,
             'channel_type': 'E,B,M,I,C,W,F,A,T,Q,S'
         }
