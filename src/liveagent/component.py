@@ -61,7 +61,8 @@ class Component(KBCEnvHandler):
         self.parse_dates()
 
         self.client = LiveAgentClient(self.parameters.token, self.parameters.token_v1, self.parameters.organization,
-                                      self.parameters.date_from, self.parameters.date_until)
+                                      self.parameters.date_from, self.parameters.date_until,
+                                      self.parameters.fail_on_error)
 
     def parse_dates(self):
 
@@ -111,7 +112,6 @@ class Component(KBCEnvHandler):
 
         _objects = self.parameters.objects
         _incremental = self.parameters.incremental
-        _fail_on_error = self.parameters.fail_on_error
 
         logging.info(f"Downloading data from {self.parameters.date_from} to {self.parameters.date_until}.")
 
@@ -119,7 +119,7 @@ class Component(KBCEnvHandler):
 
             logging.info(f"Downloading {obj} data.")
 
-            _writer = LiveAgentWriter(self.tables_out_path, obj, _incremental, _fail_on_error)
+            _writer = LiveAgentWriter(self.tables_out_path, obj, _incremental)
 
             if obj not in ['tickets_messages', 'tickets', *SUPPORTED_ENDPOINTS_V1]:
 
