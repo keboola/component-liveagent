@@ -274,8 +274,8 @@ class LiveAgentClient(HttpClient):
                         return results
 
                 else:
-                    logging.error(''.join([f"Could not download paginated data for endpoint {endpoint}.\n",
-                                           f"Received: {rsp_page.status_code} - {rsp_page.text}."]))
+                    logging.error(f"Could not download paginated data for endpoint {endpoint}.\n",
+                                  f"Received: {rsp_page.status_code} - {rsp_page.text}.")
                     return []
 
         elif method == 'cursor':
