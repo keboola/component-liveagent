@@ -271,12 +271,13 @@ class LiveAgentClient(HttpClient):
                     results += res_page
 
                     if len(res_page) < PAGE_LIMIT:
-                        results_complete = True
                         return results
 
                 else:
                     logging.error(''.join([f"Could not download paginated data for endpoint {endpoint}.\n",
                                            f"Received: {rsp_page.status_code} - {rsp_page.text}."]))
+                    results_complete = True
+
         elif method == 'cursor':
             results = []
             results_complete = False
