@@ -25,7 +25,8 @@ class ClientException(Exception):
 
 class LiveAgentClient(HttpClient):
 
-    def __init__(self, token_v3: str, token_v1: str, organization: str, date_from: str, date_until: str):
+    def __init__(self, token_v3: str, token_v1: str, organization: str, date_from: str, date_until: str,
+                 fail_on_error: bool = True):
 
         self.parameters = Parameters()
         self.parameters.token_v3 = token_v3
@@ -33,6 +34,7 @@ class LiveAgentClient(HttpClient):
         self.parameters.organization = organization
         self.parameters.date_from = date_from
         self.parameters.date_until = date_until
+        self.parameters.fail_on_error = fail_on_error
 
         self.check_organization()
         super().__init__(base_url=self.parameters.url, auth_header={
@@ -264,7 +266,6 @@ class LiveAgentClient(HttpClient):
                     else:
                         try:
                             res_page = rsp_page.json()[result_key]
-
                         except KeyError:
                             raise ClientException(f"Key {result_key} not found in response.")
 
@@ -274,9 +275,8 @@ class LiveAgentClient(HttpClient):
                         return results
 
                 else:
-                    logging.error(f"Could not download paginated data for endpoint {endpoint}.\n",
-                                  f"Received: {rsp_page.status_code} - {rsp_page.text}.")
-                    return results
+                    self.handle_error(f"Could not download paginated data for endpoint {endpoint}.\n "
+                                      f"Received: {rsp_page.status_code} - {rsp_page.text}.", results)
 
         elif method == 'cursor':
             results = []
@@ -310,8 +310,8 @@ class LiveAgentClient(HttpClient):
                         continue
 
                 else:
-                    raise ClientException(''.join([f"Could not download paginated data for endpoint {endpoint}.\n",
-                                                   f"Received: {rsp_page.status_code} - {rsp_page.text}."]))
+                    self.handle_error(f"Could not download paginated data for endpoint {endpoint}.\n"
+                                      f"Received: {rsp_page.status_code} - {rsp_page.text}.", results)
 
         elif method == 'limit':
             results = []
@@ -339,7 +339,12 @@ class LiveAgentClient(HttpClient):
                         offset += limit
 
                 else:
-                    raise ClientException(''.join([f"Could not download paginated data for endpoint {endpoint}.\n",
-                                                   f"Received: {rsp_page.status_code} - {rsp_page.text}."]))
+                    self.handle_error(f"Could not download paginated data for endpoint {endpoint}.\n"
+                                      f"Received: {rsp_page.status_code} - {rsp_page.text}.", results)
         else:
             raise ClientException(f"Unsupported pagination method {method}.")
+
+    def handle_error(self, msg: str, results: list):
+        if self.parameters.fail_on_error:
+            raise ClientException(msg)
+        return results

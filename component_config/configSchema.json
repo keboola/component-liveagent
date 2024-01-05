@@ -127,6 +127,13 @@
         ]
       },
       "propertyOrder": 500
+    },
+      "fail_on_error": {
+      "type": "boolean",
+      "format": "checkbox",
+      "title": "Fail on error",
+      "default": true,
+      "propertyOrder": 600
     }
   }
 }

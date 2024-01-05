@@ -15,6 +15,7 @@ KEY_DATE_FROM = 'from'
 KEY_DATE_UNTIL = 'until'
 KEY_INCREMENTAL = 'incremental_load'
 KEY_DEBUG = 'debug'
+KEY_FAIL_ON_ERROR = 'fail_on_error'
 
 MANDATORY_PARS = [KEY_API_TOKEN, KEY_ORGANIZATION, KEY_OBJECTS]
 MANDATORY_IMAGE_PARS = []
@@ -54,6 +55,7 @@ class Component(KBCEnvHandler):
         self.parameters.organization = self.cfg_params[KEY_ORGANIZATION]
         self.parameters.date_object = self.cfg_params.get(KEY_DATE, {})
         self.parameters.incremental = self.cfg_params.get(bool(KEY_INCREMENTAL), True)
+        self.parameters.fail_on_error = self.cfg_params.get(KEY_FAIL_ON_ERROR, False)
 
         self.check_objects()
         self.parse_dates()
@@ -88,7 +90,7 @@ class Component(KBCEnvHandler):
 
     def check_objects(self):
 
-        if self.parameters.objects == []:
+        if not self.parameters.objects:
             raise UserException("No objects to download were specified.")
 
         _unsupported = []
@@ -109,6 +111,7 @@ class Component(KBCEnvHandler):
 
         _objects = self.parameters.objects
         _incremental = self.parameters.incremental
+        _fail_on_error = self.parameters.fail_on_error
 
         logging.info(f"Downloading data from {self.parameters.date_from} to {self.parameters.date_until}.")
 
@@ -116,7 +119,7 @@ class Component(KBCEnvHandler):
 
             logging.info(f"Downloading {obj} data.")
 
-            _writer = LiveAgentWriter(self.tables_out_path, obj, _incremental)
+            _writer = LiveAgentWriter(self.tables_out_path, obj, _incremental, _fail_on_error)
 
             if obj not in ['tickets_messages', 'tickets', *SUPPORTED_ENDPOINTS_V1]:
 
