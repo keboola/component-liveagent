@@ -207,6 +207,8 @@ class Component(KBCEnvHandler):
 
                 ticket_ids = [t['id'] for t in _api_results]
 
+                logging.info(f"The component will process messages for {len(ticket_ids)} tickets.")
+
                 _writer_messages = LiveAgentWriter(self.tables_out_path, 'tickets_messages', _incremental)
                 _writer_content = LiveAgentWriter(self.tables_out_path, 'tickets_messages_content',
                                                   _incremental)
