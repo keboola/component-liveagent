@@ -114,7 +114,7 @@ class Component(KBCEnvHandler):
 
         for obj in _objects:
 
-            logging.info(f"Downloading data about {obj}.")
+            logging.info(f"Downloading {obj} data.")
 
             _writer = LiveAgentWriter(self.tables_out_path, obj, _incremental)
 
@@ -194,7 +194,7 @@ class Component(KBCEnvHandler):
 
         if 'tickets' in _objects or 'tickets_messages' in _objects:
 
-            logging.info("Download data about tickets.")
+            logging.info("Downloading ticket data.")
 
             _writer_tickets = LiveAgentWriter(self.tables_out_path, 'tickets', _incremental)
             try:
