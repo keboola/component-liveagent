@@ -251,7 +251,7 @@ class LiveAgentClient(HttpClient):
             results_complete = False
             _page = 0
 
-            while results_complete is False:
+            while not results_complete:
 
                 _page += 1
                 par_page = {**par_endpoint, **{'_page': _page}}
@@ -275,15 +275,15 @@ class LiveAgentClient(HttpClient):
                         return results
 
                 else:
-                    self.handle_error(f"Could not download paginated data for endpoint {endpoint}.\n "
-                                      f"Received: {rsp_page.status_code} - {rsp_page.text}.", results)
+                    return self.handle_error(f"Could not download paginated data for endpoint {endpoint}.\n "
+                                             f"Received: {rsp_page.status_code} - {rsp_page.text}.", results)
 
         elif method == 'cursor':
             results = []
             results_complete = False
             _cursor = None
 
-            while results_complete is False:
+            while not results_complete:
 
                 par_page = {**parameters, **{'_cursor': _cursor, '_perPage': PAGE_LIMIT}}
                 rsp_page = self.get_raw(endpoint_path=url_endpoint, params=par_page, is_absolute_path=True)
@@ -310,8 +310,8 @@ class LiveAgentClient(HttpClient):
                         continue
 
                 else:
-                    self.handle_error(f"Could not download paginated data for endpoint {endpoint}.\n"
-                                      f"Received: {rsp_page.status_code} - {rsp_page.text}.", results)
+                    return self.handle_error(f"Could not download paginated data for endpoint {endpoint}.\n"
+                                             f"Received: {rsp_page.status_code} - {rsp_page.text}.", results)
 
         elif method == 'limit':
             results = []
@@ -319,8 +319,7 @@ class LiveAgentClient(HttpClient):
             limit = limit_size
             offset = 0
 
-            while results_complete is False:
-                pass
+            while not results_complete:
 
                 par_page = {**parameters, **{limit_param: limit, offset_param: offset}}
                 rsp_page = self.get_raw(endpoint_path=url_endpoint, params=par_page, is_absolute_path=True)
@@ -339,12 +338,13 @@ class LiveAgentClient(HttpClient):
                         offset += limit
 
                 else:
-                    self.handle_error(f"Could not download paginated data for endpoint {endpoint}.\n"
-                                      f"Received: {rsp_page.status_code} - {rsp_page.text}.", results)
+                    return self.handle_error(f"Could not download paginated data for endpoint {endpoint}.\n"
+                                             f"Received: {rsp_page.status_code} - {rsp_page.text}.", results)
         else:
             raise ClientException(f"Unsupported pagination method {method}.")
 
     def handle_error(self, msg: str, results: list):
         if self.parameters.fail_on_error:
             raise ClientException(msg)
+        logging.warning(msg)
         return results
