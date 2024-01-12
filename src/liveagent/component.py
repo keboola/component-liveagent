@@ -222,6 +222,9 @@ class Component(KBCEnvHandler):
                 for tid in ticket_ids:
                     try:
                         _messages = self.client.get_ticket_messages(tid)
+
+                        logging.info(f"Ticket messages: {_messages}")
+
                     except ClientException as c_ex:
                         raise UserException(c_ex) from c_ex
 
