@@ -15,6 +15,7 @@ KEY_DATE_FROM = 'from'
 KEY_DATE_UNTIL = 'until'
 KEY_INCREMENTAL = 'incremental_load'
 KEY_DEBUG = 'debug'
+KEY_FAIL_ON_ERROR = 'fail_on_error'
 
 MANDATORY_PARS = [KEY_API_TOKEN, KEY_ORGANIZATION, KEY_OBJECTS]
 MANDATORY_IMAGE_PARS = []
@@ -54,12 +55,14 @@ class Component(KBCEnvHandler):
         self.parameters.organization = self.cfg_params[KEY_ORGANIZATION]
         self.parameters.date_object = self.cfg_params.get(KEY_DATE, {})
         self.parameters.incremental = self.cfg_params.get(bool(KEY_INCREMENTAL), True)
+        self.parameters.fail_on_error = self.cfg_params.get(KEY_FAIL_ON_ERROR, False)
 
         self.check_objects()
         self.parse_dates()
 
         self.client = LiveAgentClient(self.parameters.token, self.parameters.token_v1, self.parameters.organization,
-                                      self.parameters.date_from, self.parameters.date_until)
+                                      self.parameters.date_from, self.parameters.date_until,
+                                      self.parameters.fail_on_error)
 
     def parse_dates(self):
 
@@ -88,7 +91,7 @@ class Component(KBCEnvHandler):
 
     def check_objects(self):
 
-        if self.parameters.objects == []:
+        if not self.parameters.objects:
             raise UserException("No objects to download were specified.")
 
         _unsupported = []
@@ -114,7 +117,7 @@ class Component(KBCEnvHandler):
 
         for obj in _objects:
 
-            logging.info(f"Downloading data about {obj}.")
+            logging.info(f"Downloading {obj} data.")
 
             _writer = LiveAgentWriter(self.tables_out_path, obj, _incremental)
 
@@ -194,7 +197,7 @@ class Component(KBCEnvHandler):
 
         if 'tickets' in _objects or 'tickets_messages' in _objects:
 
-            logging.info("Download data about tickets.")
+            logging.info("Downloading ticket data.")
 
             _writer_tickets = LiveAgentWriter(self.tables_out_path, 'tickets', _incremental)
             try:
@@ -207,6 +210,8 @@ class Component(KBCEnvHandler):
 
                 ticket_ids = [t['id'] for t in _api_results]
 
+                logging.info(f"The component will process messages for {len(ticket_ids)} tickets.")
+
                 _writer_messages = LiveAgentWriter(self.tables_out_path, 'tickets_messages', _incremental)
                 _writer_content = LiveAgentWriter(self.tables_out_path, 'tickets_messages_content',
                                                   _incremental)
@@ -217,6 +222,7 @@ class Component(KBCEnvHandler):
                 for tid in ticket_ids:
                     try:
                         _messages = self.client.get_ticket_messages(tid)
+
                     except ClientException as c_ex:
                         raise UserException(c_ex) from c_ex
 

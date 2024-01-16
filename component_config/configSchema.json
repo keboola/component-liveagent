@@ -127,6 +127,14 @@
         ]
       },
       "propertyOrder": 500
+    },
+      "fail_on_error": {
+      "type": "boolean",
+      "format": "checkbox",
+      "title": "Fail on error",
+      "default": true,
+      "propertyOrder": 600,
+        "description": "If set to false, entities that cannot be processed will not result in error, but will be skipped instead."
     }
   }
 }

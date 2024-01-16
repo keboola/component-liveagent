@@ -25,7 +25,8 @@ class ClientException(Exception):
 
 class LiveAgentClient(HttpClient):
 
-    def __init__(self, token_v3: str, token_v1: str, organization: str, date_from: str, date_until: str):
+    def __init__(self, token_v3: str, token_v1: str, organization: str, date_from: str, date_until: str,
+                 fail_on_error: bool = True):
 
         self.parameters = Parameters()
         self.parameters.token_v3 = token_v3
@@ -33,6 +34,7 @@ class LiveAgentClient(HttpClient):
         self.parameters.organization = organization
         self.parameters.date_from = date_from
         self.parameters.date_until = date_until
+        self.parameters.fail_on_error = fail_on_error
 
         self.check_organization()
         super().__init__(base_url=self.parameters.url, auth_header={
@@ -101,7 +103,7 @@ class LiveAgentClient(HttpClient):
     def get_tickets(self) -> List:
 
         par_tickets = {
-            '_filters': self._create_filter_expresssion(DATE_FILTER_FIELD_TCKTS)
+            '_filters': self._create_filter_expression_tickets_v3(DATE_FILTER_FIELD_TCKTS)
         }
 
         return self._get_paged_request('v3/tickets', parameters=par_tickets)
@@ -208,6 +210,8 @@ class LiveAgentClient(HttpClient):
             'channel_type': 'E,B,M,I,C,W,F,A,T,Q,S'
         }
 
+        logging.debug(f"Conversations parameters: {par_conversations}")
+
         return self._get_paged_request('conversations', result_key='conversations',
                                        parameters=par_conversations, method='limit',
                                        limit_param='limit', offset_param='offset')
@@ -218,6 +222,15 @@ class LiveAgentClient(HttpClient):
                 f"[\"{filter_field}\",\"<=\",\"{self.parameters.date_until}\"]]"
 
         # logging.debug(f"Expression: {_expr}.")
+
+        return _expr
+
+    def _create_filter_expression_tickets_v3(self, filter_field):
+
+        _expr = f"[[\"{filter_field}\",\"D>=\",\"{self.parameters.date_from}\"]," + \
+                f"[\"{filter_field}\",\"D<=\",\"{self.parameters.date_until}\"]]"
+
+        logging.debug(f"Expression: {_expr}.")
 
         return _expr
 
@@ -238,7 +251,7 @@ class LiveAgentClient(HttpClient):
             results_complete = False
             _page = 0
 
-            while results_complete is False:
+            while not results_complete:
 
                 _page += 1
                 par_page = {**par_endpoint, **{'_page': _page}}
@@ -253,25 +266,24 @@ class LiveAgentClient(HttpClient):
                     else:
                         try:
                             res_page = rsp_page.json()[result_key]
-
                         except KeyError:
                             raise ClientException(f"Key {result_key} not found in response.")
 
                     results += res_page
 
                     if len(res_page) < PAGE_LIMIT:
-                        results_complete = True
                         return results
 
                 else:
-                    raise ClientException(''.join([f"Could not download paginated data for endpoint {endpoint}.\n",
-                                                   f"Received: {rsp_page.status_code} - {rsp_page.text}."]))
+                    return self.handle_error(f"Could not download paginated data for endpoint {endpoint}.\n "
+                                             f"Received: {rsp_page.status_code} - {rsp_page.text}.", results)
+
         elif method == 'cursor':
             results = []
             results_complete = False
             _cursor = None
 
-            while results_complete is False:
+            while not results_complete:
 
                 par_page = {**parameters, **{'_cursor': _cursor, '_perPage': PAGE_LIMIT}}
                 rsp_page = self.get_raw(endpoint_path=url_endpoint, params=par_page, is_absolute_path=True)
@@ -292,15 +304,14 @@ class LiveAgentClient(HttpClient):
 
                     _cursor = rsp_page.headers.get('next_page_cursor', None)
                     if _cursor is None:
-                        results_complete = True
                         return results
 
                     else:
                         continue
 
                 else:
-                    raise ClientException(''.join([f"Could not download paginated data for endpoint {endpoint}.\n",
-                                                   f"Received: {rsp_page.status_code} - {rsp_page.text}."]))
+                    return self.handle_error(f"Could not download paginated data for endpoint {endpoint}.\n"
+                                             f"Received: {rsp_page.status_code} - {rsp_page.text}.", results)
 
         elif method == 'limit':
             results = []
@@ -308,8 +319,7 @@ class LiveAgentClient(HttpClient):
             limit = limit_size
             offset = 0
 
-            while results_complete is False:
-                pass
+            while not results_complete:
 
                 par_page = {**parameters, **{limit_param: limit, offset_param: offset}}
                 rsp_page = self.get_raw(endpoint_path=url_endpoint, params=par_page, is_absolute_path=True)
@@ -322,14 +332,19 @@ class LiveAgentClient(HttpClient):
                     results += _res
 
                     if len(_res) < limit:
-                        results_complete = True
                         return results
 
                     else:
                         offset += limit
 
                 else:
-                    raise ClientException(''.join([f"Could not download paginated data for endpoint {endpoint}.\n",
-                                                   f"Received: {rsp_page.status_code} - {rsp_page.text}."]))
+                    return self.handle_error(f"Could not download paginated data for endpoint {endpoint}.\n"
+                                             f"Received: {rsp_page.status_code} - {rsp_page.text}.", results)
         else:
             raise ClientException(f"Unsupported pagination method {method}.")
+
+    def handle_error(self, msg: str, results: list):
+        if self.parameters.fail_on_error:
+            raise ClientException(msg)
+        logging.warning(msg)
+        return results
